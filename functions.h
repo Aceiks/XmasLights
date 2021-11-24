@@ -1,3 +1,6 @@
+#include <avr/pgmspace.h>
+#include <FastLED.h>
+
 CRGB leds[NUM_LEDS];
 
 #define COUNT_INC 2
@@ -50,16 +53,16 @@ CHSV set_color(uint8_t index, uint16_t led_index) {
   leds[led_index] = ColorFromPalette(palette, index);
 }
 
+CRGB individual_random() {
+  return CHSV(random8(), 255, 255);
+}
+
 void show_random() {
   for(int i = 0; i < NUM_LEDS; i++) {
     leds[i] = individual_random();
   }
   FastLED.show();
   FastLED.delay(200);
-}
-
-CRGB individual_random() {
-  return CHSV(random8(), 255, 255);
 }
 
 void show_all_white() {
@@ -105,7 +108,7 @@ void show_vert_rainbow() {
   count += COUNT_INC;
 }
 
-CRGB invidual_vert_rainbow(tuint16_t index) {
+CRGB invidual_vert_rainbow(uint16_t index) {
   uint8_t val = pgm_read_byte_near(norm_positions + index*2 + 1);
   return ColorFromPalette(palette, val + count);
 }
@@ -119,7 +122,7 @@ void show_horiz_rainbow() {
   count += COUNT_INC;
 }
 
-CRGB invidual_horiz_rainbow(tuint16_t index) {
+CRGB invidual_horiz_rainbow(uint16_t index) {
   uint8_t val = pgm_read_byte_near(norm_positions + index*2);
   return ColorFromPalette(palette, val + count);
 }

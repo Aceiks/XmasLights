@@ -1,8 +1,9 @@
 #include <FastLED.h>
-#include <avr/pgmspace.h>
 
 #include "positions.h"
 #include "functions.h"
+
+#define FASTLED_INTERNAL
 
 #define RAND_LIGHTS
 #define ALL_WHITE
@@ -29,6 +30,8 @@ void setup() {
   Serial.begin(9600);
   Serial.println("HI");
 
+  PinMode(6, OUTPUT)
+
   FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
 
   delay(3000);
@@ -41,7 +44,7 @@ void loop() {
     pattern = (pattern + 1) % NUM_PATTERNS;
   }
 
-  /*switch (pattern) {
+  switch (pattern) {
     case 0:
       show_random();
       break;
@@ -54,5 +57,5 @@ void loop() {
     case 3:
       show_spinning();
       break;
-  } */
+  }
 }
