@@ -5,13 +5,7 @@
 
 #define FASTLED_INTERNAL
 
-#define RAND_LIGHTS
-#define ALL_WHITE
-#define COUNTING
-#define VERT_RAINBOW
-#define HORZ_RAINBOW
-#define SPINNING
-#define DEBUG_COLS
+#define BLEND
 
 //CRGBPalette16 palette = Rainbow_gp;
 //CRGBPalette16 palette = CloudColors_p;
@@ -23,16 +17,21 @@ CRGBPalette16 palette = CRGBPalette16(
   CRGB::Green, CRGB::Black, CRGB::Black, CRGB::Black,
   CRGB::Red, CRGB::Black, CRGB::Black, CRGB::Black);
 
+CRGB leds_1[NUM_LEDS];
+CRGB leds_2[NUM_LEDS];
+CRGB output[NUM_LEDS];
+
 #define NUM_PATTERNS 4
 uint8_t pattern;
+uint8_t blend_amount;
 
 void setup() {
   Serial.begin(9600);
   Serial.println("HI");
 
-  PinMode(6, OUTPUT)
+  pinMode(6, OUTPUT);
 
-  FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
+  FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(output, NUM_LEDS);
 
   delay(3000);
 
@@ -40,22 +39,51 @@ void setup() {
 
 void loop() {
   
+  EVERY_N_MILLISECONDS(10) {
+    if (blend_amount < 255) blend++;
+  }
+
   EVERY_N_SECONDS(60) {
     pattern = (pattern + 1) % NUM_PATTERNS;
+    blend_amount = 0;
   }
 
   switch (pattern) {
     case 0:
-      show_random();
+      show_random(leds_2);
+      if (blend_amount < 255) {
+        show_spinning(leds_1);
+        blend(leds_1, leds_2, output, NUM_LEDS, blend_amount);
+      } else {
+        memcpy(output, leds_2, NUM_LEDS * 3);
+      }
       break;
     case 1:
-      show_vert_rainbow();
+      show_vert_rainbow(leds_2);
+      if (blend_amount < 255) {
+        show_random(leds_1);
+        blend(leds_1, leds_2, output, NUM_LEDS, blend_amount);
+      } else {
+        memcpy(output, leds_2, NUM_LEDS * 3);
+      }
       break;
     case 2:
-      show_horiz_rainbow();
+      show_horiz_rainbow(leds_2);
+      if (blend_amount < 255) {
+        show_vert_rainbow(leds_1);
+        blend(leds_1, leds_2, output, NUM_LEDS, blend_amount);
+      } else {
+        memcpy(output, leds_2, NUM_LEDS * 3);
+      }
       break;
     case 3:
-      show_spinning();
+      show_spinning(leds_2);
+      if (blend_amount < 255) {
+        show_horiz_rainbow(leds_1);
+        blend(leds_1, leds_2, output, NUM_LEDS, blend_amount);
+      } else {
+        memcpy(output, leds_2, NUM_LEDS * 3);
+      }
       break;
   }
 }
