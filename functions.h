@@ -1,17 +1,15 @@
 #include <avr/pgmspace.h>
 #include <FastLED.h>
 
-#define COUNT_INC 2
+#define COUNT_INC 1
 
 #define MAX_X 18
 #define MAX_Y 31
 
 extern CRGBPalette16 palette;
 
-uint8_t count = 0;
-
 void flash(CRGB* leds, uint8_t led, CRGB color) {
-  leds[count] = color;
+  leds[led] = color;
   FastLED.show();
   FastLED.delay(400);
   leds[led] = CRGB::Black;
@@ -51,16 +49,12 @@ CHSV set_color(CRGB* leds, uint8_t index, uint16_t led_index) {
   leds[led_index] = ColorFromPalette(palette, index);
 }
 
-CRGB individual_random() {
-  return CHSV(random8(), 255, 255);
-}
-
 void show_random(CRGB* leds) {
-  for(int i = 0; i < NUM_LEDS; i++) {
-    leds[i] = individual_random();
+  EVERY_N_MILLISECONDS(200) {
+    for(int i = 0; i < NUM_LEDS; i++) {
+      leds[i] = CHSV(random8(), 255, 128);
+    }
   }
-  FastLED.show();
-  FastLED.delay(200);
 }
 
 void show_all_white(CRGB* leds) {
@@ -73,6 +67,7 @@ void show_all_white(CRGB* leds) {
 }
 
 void show_counting(CRGB* leds) {
+  static uint8_t count = 0;
   uint16_t tmp = count + 1;
   while(tmp > 100) {
     flash(leds, count, CRGB::Blue);
@@ -98,39 +93,29 @@ void show_counting(CRGB* leds) {
 }
 
 void show_vert_rainbow(CRGB* leds) {
+  static uint8_t count = 0;
   for(int i = 0; i < NUM_LEDS; i++) {
     uint8_t val = pgm_read_byte_near(norm_positions + i*2 + 1);
     set_color(leds, val+count, i);
   }
-  FastLED.show();
   count += COUNT_INC;
 }
 
-CRGB invidual_vert_rainbow(uint16_t index) {
-  uint8_t val = pgm_read_byte_near(norm_positions + index*2 + 1);
-  return ColorFromPalette(palette, val + count);
-}
-
 void show_horiz_rainbow(CRGB* leds) {
+  static uint8_t count = 0;
   for(int i = 0; i < NUM_LEDS; i++) {
     uint8_t val = pgm_read_byte_near(norm_positions + i*2);
     set_color(leds, val+count, i);
   }
-  FastLED.show();
   count += COUNT_INC;
 }
 
-CRGB invidual_horiz_rainbow(uint16_t index) {
-  uint8_t val = pgm_read_byte_near(norm_positions + index*2);
-  return ColorFromPalette(palette, val + count);
-}
-
 void show_spinning(CRGB* leds) {
+  static uint8_t count = 0;
   for(int i = 0; i < NUM_LEDS; i++) {
     uint8_t val = pgm_read_byte_near(angles + i);
     set_color(leds, val + count, i);
   }
-  FastLED.show();
   count += COUNT_INC;
 }
 

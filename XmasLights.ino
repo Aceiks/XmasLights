@@ -21,9 +21,10 @@ CRGB leds_1[NUM_LEDS];
 CRGB leds_2[NUM_LEDS];
 CRGB output[NUM_LEDS];
 
-#define NUM_PATTERNS 4
+#define NUM_PATTERNS 2
+
 uint8_t pattern;
-uint8_t blend_amount;
+uint8_t blend_amount = 255;
 
 void setup() {
   Serial.begin(9600);
@@ -40,10 +41,11 @@ void setup() {
 void loop() {
   
   EVERY_N_MILLISECONDS(10) {
-    if (blend_amount < 255) blend_amount++;
+    if (blend_amount < 252) blend_amount += 3;
+    else blend_amount = 255;
   }
 
-  EVERY_N_SECONDS(60) {
+  EVERY_N_SECONDS(15) {
     pattern = (pattern + 1) % NUM_PATTERNS;
     blend_amount = 0;
   }
@@ -61,8 +63,8 @@ void loop() {
     case 1:
       show_vert_rainbow(leds_2);
       if (blend_amount < 255) {
-        show_random(leds_1);
-        blend(leds_1, leds_2, output, NUM_LEDS, blend_amount);
+          show_random(leds_1);
+          blend(leds_1, leds_2, output, NUM_LEDS, blend_amount);
       } else {
         memcpy(output, leds_2, NUM_LEDS * 3);
       }
@@ -86,4 +88,6 @@ void loop() {
       }
       break;
   }
+
+  FastLED.show();
 }
