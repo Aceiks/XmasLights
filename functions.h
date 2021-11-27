@@ -19,7 +19,7 @@ void flash(CRGB* leds, uint8_t led, CRGB color) {
   FastLED.delay(200);
 }
 
-void horizWipe(boolean left_to_right, CRGB c_wipe, CRGB c_orig, uint32_t duration)
+/* void horizWipe(boolean left_to_right, CRGB c_wipe, CRGB c_orig, uint32_t duration)
 {
    uint32_t elapsed_time = 0;
    uint32_t X_temp;
@@ -45,9 +45,9 @@ void horizWipe(boolean left_to_right, CRGB c_wipe, CRGB c_orig, uint32_t duratio
      { leds[i] = c_wipe; }
    FastLED.show();
    
-} //horizWipe
+} //horizWipe */
 
-CHSV set_color(uint8_t index, uint16_t led_index) {
+CHSV set_color(CRGB* leds, uint8_t index, uint16_t led_index) {
   leds[led_index] = ColorFromPalette(palette, index);
 }
 
@@ -100,7 +100,7 @@ void show_counting(CRGB* leds) {
 void show_vert_rainbow(CRGB* leds) {
   for(int i = 0; i < NUM_LEDS; i++) {
     uint8_t val = pgm_read_byte_near(norm_positions + i*2 + 1);
-    set_color(val+count, i);
+    set_color(leds, val+count, i);
   }
   FastLED.show();
   count += COUNT_INC;
@@ -114,7 +114,7 @@ CRGB invidual_vert_rainbow(uint16_t index) {
 void show_horiz_rainbow(CRGB* leds) {
   for(int i = 0; i < NUM_LEDS; i++) {
     uint8_t val = pgm_read_byte_near(norm_positions + i*2);
-    set_color(val+count, i);
+    set_color(leds, val+count, i);
   }
   FastLED.show();
   count += COUNT_INC;
@@ -128,7 +128,7 @@ CRGB invidual_horiz_rainbow(uint16_t index) {
 void show_spinning(CRGB* leds) {
   for(int i = 0; i < NUM_LEDS; i++) {
     uint8_t val = pgm_read_byte_near(angles + i);
-    set_color(val + count, i);
+    set_color(leds, val + count, i);
   }
   FastLED.show();
   count += COUNT_INC;

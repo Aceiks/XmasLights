@@ -1,9 +1,9 @@
+#define FASTLED_INTERNAL
 #include <FastLED.h>
 
 #include "positions.h"
 #include "functions.h"
 
-#define FASTLED_INTERNAL
 
 #define BLEND
 
@@ -40,7 +40,7 @@ void setup() {
 void loop() {
   
   EVERY_N_MILLISECONDS(10) {
-    if (blend_amount < 255) blend++;
+    if (blend_amount < 255) blend_amount++;
   }
 
   EVERY_N_SECONDS(60) {
