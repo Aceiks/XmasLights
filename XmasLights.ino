@@ -3,7 +3,8 @@
 
 #include "positions.h"
 #include "functions.h"
-
+#include "DisplayClass.h"
+#include "BouncingBall.h"
 
 #define BLEND
 
@@ -30,6 +31,8 @@ uint8_t blend_amount = 255;
 
 bool first_run = true;
 
+DisplayClass dc = BouncingBallEffect(NUM_LEDS);
+
 void setup() {
   Serial.begin(9600);
   Serial.println("HI");
@@ -37,6 +40,7 @@ void setup() {
   pinMode(6, OUTPUT);
 
   FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(output, NUM_LEDS);
+  FastLED.setMaxPowerInMilliWatts(60000);
 
   delay(3000);
 
@@ -55,49 +59,53 @@ void loop() {
     first_run = true;
   }
 
-  switch (pattern) {
-    case 0:
-      show_random(leds_2);
-      if (blend_amount < 255) {
-        show_spinning(leds_1);
-        blend(leds_1, leds_2, output, NUM_LEDS, blend_amount);
-      } else {
-        memcpy(output, leds_2, NUM_LEDS * 3);
-      }
-      break;
-    case 1:
-      if (first_run) {
-        memcpy(leds_1, leds_2, NUM_LEDS * 3);
-        first_run = false;
-      }
-      show_vert_rainbow(leds_2);
-      if (blend_amount < 255) {
-          show_random(leds_1);
-          blend(leds_1, leds_2, output, NUM_LEDS, blend_amount);
-      } else {
-        memcpy(output, leds_2, NUM_LEDS * 3);
-      }
-      break;
-    case 2:
-      show_horiz_rainbow(leds_2);
-      if (blend_amount < 255) {
-        show_vert_rainbow(leds_1);
-        blend(leds_1, leds_2, output, NUM_LEDS, blend_amount);
-      } else {
-        memcpy(output, leds_2, NUM_LEDS * 3);
-      }
-      break;
-    case 3:
-      show_spinning(leds_2);
-      if (blend_amount < 255) {
-        show_horiz_rainbow(leds_1);
-        blend(leds_1, leds_2, output, NUM_LEDS, blend_amount);
-      } else {
-        memcpy(output, leds_2, NUM_LEDS * 3);
-      }
-      break;
+  // switch (pattern) {
+  //   case 0:
+  //     show_random(leds_2);
+  //     if (blend_amount < 255) {
+  //       show_spinning(leds_1);
+  //       blend(leds_1, leds_2, output, NUM_LEDS, blend_amount);
+  //     } else {
+  //       memcpy(output, leds_2, NUM_LEDS * 3);
+  //     }
+  //     break;
+  //   case 1:
+  //     if (first_run) {
+  //       memcpy(leds_1, leds_2, NUM_LEDS * 3);
+  //       first_run = false;
+  //     }
+  //     show_vert_rainbow(leds_2);
+  //     if (blend_amount < 255) {
+  //         show_random(leds_1);
+  //         blend(leds_1, leds_2, output, NUM_LEDS, blend_amount);
+  //     } else {
+  //       memcpy(output, leds_2, NUM_LEDS * 3);
+  //     }
+  //     break;
+  //   case 2:
+  //     show_horiz_rainbow(leds_2);
+  //     if (blend_amount < 255) {
+  //       show_vert_rainbow(leds_1);
+  //       blend(leds_1, leds_2, output, NUM_LEDS, blend_amount);
+  //     } else {
+  //       memcpy(output, leds_2, NUM_LEDS * 3);
+  //     }
+  //     break;
+  //   case 3:
+  //     show_spinning(leds_2);
+  //     if (blend_amount < 255) {
+  //       show_horiz_rainbow(leds_1);
+  //       blend(leds_1, leds_2, output, NUM_LEDS, blend_amount);
+  //     } else {
+  //       memcpy(output, leds_2, NUM_LEDS * 3);
+  //     }
+  //     break;
+  // }
+
+  EVERY_N_MILLISECONDS(50) {
+    dc.Draw(output);
   }
 
-  FastLED.brightness(128);
+  FastLED.setBrightness(128);
   FastLED.show();
 }
