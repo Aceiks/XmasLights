@@ -98,5 +98,6 @@ void loop() {
       break;
   }
 
+  FastLED.brightness(128);
   FastLED.show();
 }
