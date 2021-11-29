@@ -57,6 +57,12 @@ void show_random(CRGB* leds) {
   }
 }
 
+void force_random(CRGB* leds) {
+  for(int i = 0; i < NUM_LEDS; i++) {
+    leds[i] = CHSV(random8(), 255, 128);
+  }
+}
+
 void show_all_white(CRGB* leds) {
   FastLED.setBrightness(128);
   for(int i = 0;i < NUM_LEDS; i++){
