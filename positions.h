@@ -1,3 +1,6 @@
+#ifndef LED_POSITIONS
+#define LED_POSITIONS
+
 #define LED_PIN 6
 
 #define COLOR_ORDER RGB       // sets the color order in which the LEDs are designed for
@@ -135,3 +138,5 @@ const byte angles[NUM_LEDS] PROGMEM =
  210,  219,  227,  227,  228,  236,  228,  223,  215,  201, 
  183,  191,  159,  159,  128,  109,   83,   74,   64,   74
  };
+
+#endif

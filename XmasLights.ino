@@ -31,16 +31,19 @@ uint8_t blend_amount = 255;
 
 bool first_run = true;
 
-DisplayClass dc = BouncingBallEffect(NUM_LEDS);
+DisplayClass* dc;
+BouncingBallEffect bbe = BouncingBallEffect(31, 4);
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.println("HI");
 
   pinMode(6, OUTPUT);
 
   FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(output, NUM_LEDS);
   FastLED.setMaxPowerInMilliWatts(60000);
+
+  dc = &bbe;
 
   delay(3000);
 
@@ -102,8 +105,12 @@ void loop() {
   //     break;
   // }
 
-  EVERY_N_MILLISECONDS(50) {
-    dc.Draw(output);
+  EVERY_N_MILLISECONDS(16) {
+    dc->Draw(output);
+  }
+
+  EVERY_N_SECONDS(1) {
+    Serial.println(FastLED.getFPS());
   }
 
   FastLED.setBrightness(128);

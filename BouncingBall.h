@@ -2,13 +2,14 @@
 #define FASTLED_INTERNAL
 #include <FastLED.h>
 
+#include "positions.h"
 #include "DisplayClass.h"
 
 #define GRAVITY -9.81
 #define START_HEIGHT 1
 #define SPEED_KNOB 4.0
 
-#define NUM_BALLS 3
+#define NUM_BALLS 4
 
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
 
@@ -54,10 +55,11 @@ class Ball
       if (height < 0) {
         height = 0;
         speed = dampening * speed;
-        lastBounce = Time();
+        lastBounce = millis();
 
-        if (speed < 0.01)
-          speed = InitialBallSpeed(START_HEIGHT) * dampening;
+        if (speed < 1.75) {
+          speed = InitialBallSpeed(START_HEIGHT * 1.05) - (random8(64)/256.0);
+        }
       }
     }
 };
@@ -91,26 +93,33 @@ class BouncingBallEffect: public DisplayClass
     
     void Draw(CRGB* leds) {
       if (fadeRate != 0) {
-        for (uint8_t i = 0; i < length + 1; i++)
+        for (uint16_t i = 0; i < NUM_LEDS; i++)
           leds[i].fadeToBlackBy(fadeRate);
       } else {
-        for (uint8_t i = 0; i < length + 1; i++)
-          leds[i] = CRGB::Black;
+        for (uint16_t i = 0; i < NUM_LEDS; i++)
+          leds[i] = CRGB(0, 0, 0);
       }
 
       for (uint8_t i = 0; i < NUM_BALLS; i++) {
         balls[i].Update();
-        uint16_t position = (uint16_t)(balls[i].height * (length - 1) / START_HEIGHT);
+        float position = (balls[i].height * (length - 1) / START_HEIGHT) + 1;
 
-        leds[position] += balls[i].color;
-        leds[position+1] += balls[i].color;
-
-        if (mirrored) {
-          leds[length - 1 - position] += balls[i].color;
-          leds[length - position] += balls[i].color;
+        float fraction = position - (uint8_t)position;
+        uint8_t iPosLow = (uint8_t)position;
+        uint8_t iPosHigh = iPosLow + 1;
+        CRGB lowColor = CRGB(balls[i].color).fadeToBlackBy((uint8_t)(256 * fraction));
+        CRGB highColor = CRGB(balls[i].color).fadeToBlackBy((uint8_t)(256 * (1-fraction)));
+        for (uint16_t j = 0; j < NUM_LEDS; j++) {
+          uint8_t val = pgm_read_byte_near(positions + j*2 + 1);
+          if (val == iPosLow) {
+            leds[j] += lowColor;
+          } else if (val == iPosHigh) {
+            leds[j] += highColor;
+          }
         }
+        Serial.println();
+
       }
-      delay(20);
 
     }
 };
