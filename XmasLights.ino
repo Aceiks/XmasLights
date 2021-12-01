@@ -3,8 +3,9 @@
 
 #include "positions.h"
 #include "functions.h"
-#include "DisplayClass.h"
-#include "BouncingBall.h"
+#include "displays/DisplayClass.h"
+#include "displays/BouncingBall.h"
+#include "displays/Twinkle.h"
 
 #define BLEND
 
@@ -33,6 +34,7 @@ bool first_run = true;
 
 DisplayClass* dc;
 BouncingBallEffect bbe = BouncingBallEffect(31, 4);
+Twinkle twinkle = Twinkle();
 
 void setup() {
   Serial.begin(115200);
@@ -43,7 +45,7 @@ void setup() {
   FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(output, NUM_LEDS);
   FastLED.setMaxPowerInMilliWatts(60000);
 
-  dc = &bbe;
+  dc = &twinkle;
 
   delay(3000);
 

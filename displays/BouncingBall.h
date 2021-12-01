@@ -2,7 +2,7 @@
 #define FASTLED_INTERNAL
 #include <FastLED.h>
 
-#include "positions.h"
+#include "../positions.h"
 #include "DisplayClass.h"
 
 #define GRAVITY -9.81
